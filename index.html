@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>求是：一所大学的回答 · 浙江大学求是精神交互长卷</title>
+<meta name="description" content="从1897年求是书院到1937年文军长征，从竺可桢之问到今天的你我——一份关于浙江大学"求是精神"的交互式H5长卷。">
+<meta name="author" content="大学生思想素养传播实践作业">
+<meta name="theme-color" content="#0d1a2b">
+<meta property="og:type" content="website">
+<meta property="og:title" content="求是：一所大学的回答">
+<meta property="og:description" content="滑动十一屏，走完浙大求是精神的一百二十九年。">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230d1a2b'/><text x='32' y='45' font-size='38' text-anchor='middle' fill='%23c93a2b' font-family='serif'>求</text></svg>">
+
+<!-- ===================================================================
+     ★ 作品网址：部署后想改的就这一行（当前已填入本作品的正式地址）
+     作用：① 页面里的链接框与"下载二维码"用它；
+           ② 断网/禁用 JS 时显示的静态兜底二维码由 tools/qrgen.py 决定。
+     注意：只要你是通过 http/https 打开页面（GitHub Pages、学校服务器都是），
+           二维码会自动读取地址栏的真实地址，即使这里忘了改也一定是对的。
+     换地址时：改完这行，再跑一次
+           python tools/qrgen.py "新地址" assets/img/qrcode.svg assets/img/qrcode.png
+           node tools/build-single.js
+     =================================================================== -->
+<script>window.QIUSHI_SITE_URL = 'https://MATIC-InfoSecurity.github.io/zju-qiushi-h5/';</script>
+</head>
+<body>
+
+<!-- ================= 全局 UI：进度条 / 音频 / 导航点 ================= -->
+<div class="grain" aria-hidden="true"></div>
+
+<div class="progress" aria-hidden="true"><div class="progress__bar" id="progressBar"></div></div>
+
+<header class="topbar">
+  <div class="topbar__brand">
+    <span class="topbar__mark">求是</span>
+    <span class="topbar__sub">1897—2026</span>
+  </div>
+  <div class="topbar__tools">
+    <div class="musicbar" id="musicBar">
+      <button class="iconbtn iconbtn--music" id="musicToggle" type="button" aria-pressed="false" title="播放浙江大学校歌《大不自多》">
+        <span class="iconbtn__icon" data-music-icon>🔇</span>
+        <span class="iconbtn__label" data-music-label>播放校歌</span>
+      </button>
+      <button class="musicbar__more" id="musicHead" type="button" aria-expanded="false" aria-controls="musicPanel" title="音量与音源">▾</button>
+      <div class="musicpanel" id="musicPanel" hidden>
+        <div class="musicpanel__row">
+          <span class="musicpanel__k">音量</span>
+          <input type="range" id="musicVol" min="0" max="100" value="55" aria-label="音乐音量">
+        </div>
+        <div class="musicpanel__row musicpanel__row--btns">
+          <button class="btn btn--tiny" id="musicUseOfficial" type="button">用官方录音</button>
+          <button class="btn btn--tiny btn--tiny-ghost" id="musicUseSynth" type="button">自创钢琴版</button>
+        </div>
+        <div class="musicpanel__row">
+          <label class="musicpanel__file">
+            <input type="file" id="musicFile" accept="audio/*">
+            <span id="musicFileLabel">上传本地音频（可选）</span>
+          </label>
+        </div>
+        <p class="musicpanel__state" id="musicState"></p>
+        <p class="musicpanel__credit" id="musicCredit"></p>
+        <p class="musicpanel__note">
+          校歌词 马一浮 / 曲 应尚能。录音版权归浙江大学及表演者，此处用于课程作业演示；
+          若需公开传播请先取得授权，或改用最稳做法：<a id="musicLink" href="https://www.zju.edu.cn/574/" target="_blank" rel="noopener">在官网收听</a>。
+        </p>
+      </div>
+    </div>
+    <button class="iconbtn" id="audioToggle" type="button" aria-pressed="false" title="氛围音（风声与钟磬，非校歌）">
+      <span class="iconbtn__icon" data-icon="muted">🌫️</span>
+      <span class="iconbtn__label">氛围音</span>
+    </button>
+    <div class="volume" id="volumeWrap" hidden>
+      <input type="range" id="volumeRange" min="0" max="100" value="45" aria-label="氛围音音量">
+    </div>
+  </div>
+</header>
+
+<nav class="dots" id="dots" aria-label="页面导航"></nav>
+
+<div class="scrollhint" id="scrollHint" aria-hidden="true"><span>向下滑动</span><i></i></div>
+
+<main id="stage" class="stage">
+<div class="h5" id="h5">
+
+  <!-- ================= 第 0 屏 · 封面 ================= -->
+  <section class="screen screen--cover" id="s0" data-nav="封面" data-screen="0">
+    <div class="cover__bg" aria-hidden="true">
+      <div class="inkblot inkblot--1"></div>
+      <div class="inkblot inkblot--2"></div>
+      <div class="inkblot inkblot--3"></div>
+    </div>
+
+    <div class="cover__inner">
+      <div class="emblem" id="emblem" aria-label="浙江大学求是鹰徽标（动态演绎）">
+        <div class="emblem__halo"></div>
+        <div class="emblem__ring emblem__ring--outer"></div>
+        <div class="emblem__ring emblem__ring--inner"></div>
+        <div class="emblem__eagle">求是</div>
+      </div>
+
+      <h1 class="cover__title">
+        <span class="cover__title-main">求&nbsp;是</span>
+        <span class="cover__title-sub">一所大学的回答</span>
+      </h1>
+
+      <p class="cover__motto">
+        <span class="tagline" id="tagline" data-lines='["求是创新 · 浙江大学校训","海纳江河 · 启真厚德 · 开物前民 · 树我邦国"]'></span>
+      </p>
+
+      <p class="cover__lead">
+        从 1897 年的求是书院，到战火中两千六百公里的文军长征；<br>
+        从竺可桢校长的两问，到此刻屏幕前的你。<br>
+        这是一条走了 <strong>129</strong> 年的路。
+      </p>
+
+      <button class="btn btn--primary" id="beginBtn" type="button">开始行走 · 十一屏长卷</button>
+
+      <div class="cover__meta">
+        <span>大学生思想素养传播实践作品</span>
+        <span class="dot">·</span>
+        <span>单页 H5 / 无外部依赖</span>
+      </div>
+    </div>
+
+    <div class="cover__scroll" aria-hidden="true"><span></span></div>
+  </section>
+
+  <!-- ================= 第 1 屏 · 源流 ================= -->
+  <section class="screen" id="s1" data-nav="源流" data-screen="1">
+    <div class="sec-head" data-reveal>
+      <p class="sec-head__kicker">第一屏 · 溯源</p>
+      <h2 class="sec-head__title">求是，是从哪一天开始的</h2>
+      <p class="sec-head__desc">
+        1897 年 5 月 21 日，杭州知府林启在普慈寺旧址创办<strong>求是书院</strong>，
+        以"务求实学，存是去非"为办学宗旨——这是中国人自己最早创办的新式高等学堂之一。
+      </p>
+    </div>
+
+    <div class="timeline" id="timeline">
+      <div class="timeline__track" aria-hidden="true"><div class="timeline__fill" id="timelineFill"></div></div>
+      <ol class="timeline__list" id="timelineList">
+        <li class="tl" data-year="1897" tabindex="0" role="button" aria-expanded="false">
+          <span class="tl__dot"></span>
+          <span class="tl__year">1897</span>
+          <span class="tl__label">求是书院</span>
+          <p class="tl__detail">清光绪二十三年四月二十日（5 月 21 日）开学，林启兼任总办。"求是"二字出自《汉书·河间献王传》"修学好古，实事求是"。校址在今杭州大学路。</p>
+        </li>
+        <li class="tl" data-year="1901" tabindex="0" role="button" aria-expanded="false">
+          <span class="tl__dot"></span>
+          <span class="tl__year">1901</span>
+          <span class="tl__label">浙江求是大学堂</span>
+          <p class="tl__detail">书院改称"浙江求是大学堂"，次年再改"浙江大学堂"。新式学制在这片院子里一寸寸长出来。</p>
+        </li>
+        <li class="tl" data-year="1903" tabindex="0" role="button" aria-expanded="false">
+          <span class="tl__dot"></span>
+          <span class="tl__year">1903</span>
+          <span class="tl__label">浙江高等学堂</span>
+          <p class="tl__detail">几经易名，历"浙江高等学堂""浙江高等学校"等阶段，培养出蒋方震、何燏时、邵飘萍等一批人物。</p>
+        </li>
+        <li class="tl" data-year="1927" tabindex="0" role="button" aria-expanded="false">
+          <span class="tl__dot"></span>
+          <span class="tl__year">1927</span>
+          <span class="tl__label">国立第三中山大学</span>
+          <p class="tl__detail">7 月 15 日，国民政府在求是书院原址成立国立第三中山大学，合并浙江工专、浙江农专为工学院、劳农学院，蒋梦麟任校长。</p>
+        </li>
+        <li class="tl" data-year="1928" tabindex="0" role="button" aria-expanded="false">
+          <span class="tl__dot"></span>
+          <span class="tl__year">1928</span>
+          <span class="tl__label">国立浙江大学</span>
+          <p class="tl__detail">5 月，学校定名"国立浙江大学"，设文理学院；陈建功、苏步青、束星北、贝时璋、蔡邦华等名师相继汇聚。</p>
+        </li>
+        <li class="tl" data-year="1936" tabindex="0" role="button" aria-expanded="false">
+          <span class="tl__dot"></span>
+          <span class="tl__year">1936</span>
+          <span class="tl__label">竺可桢就任校长</span>
+          <p class="tl__detail">4 月，著名气象学家、地理学家竺可桢出任校长。同年 9 月的开学典礼上，他问出了那两个问题。</p>
+        </li>
+        <li class="tl" data-year="1937" tabindex="0" role="button" aria-expanded="false">
+          <span class="tl__dot"></span>
+          <span class="tl__year">1937</span>
+          <span class="tl__label">文军长征启程</span>
+          <p class="tl__detail">抗战爆发，9 月新生先迁天目山禅源寺；11 月 11 日起，师生分批离开杭州，一迁浙江建德，学校从此上路。</p>
+        </li>
+        <li class="tl" data-year="1938" tabindex="0" role="button" aria-expanded="false">
+          <span class="tl__dot tl__dot--red"></span>
+          <span class="tl__year">1938</span>
+          <span class="tl__label">"求是"定为校训</span>
+          <p class="tl__detail">西迁至广西宜山，条件最为艰难之时，校务会议正式确定"求是"为校训，并邀马一浮作词、应尚能谱曲，定校歌《大不自多》。</p>
+        </li>
+        <li class="tl" data-year="1940" role="button" tabindex="0" aria-expanded="false">
+          <span class="tl__dot"></span>
+          <span class="tl__year">1940</span>
+          <span class="tl__label">遵义 · 湄潭办学</span>
+          <p class="tl__detail">2 月起在贵州遵义、湄潭等地办学七年，是西迁中最稳定的一段。1946 年初已设 7 个学院 26 个学系。</p>
+        </li>
+        <li class="tl" data-year="1946" tabindex="0" role="button" aria-expanded="false">
+          <span class="tl__dot"></span>
+          <span class="tl__year">1946</span>
+          <span class="tl__label">复员返杭</span>
+          <p class="tl__detail">抗战胜利后，师生分批东归杭州。九年流亡，一所大学把书桌搬过了半个中国，又搬了回来。</p>
+        </li>
+        <li class="tl" data-year="1952" tabindex="0" role="button" aria-expanded="false">
+          <span class="tl__dot"></span>
+          <span class="tl__year">1952</span>
+          <span class="tl__label">院系调整</span>
+          <p class="tl__detail">全国院系调整，部分院系分出，后发展出杭州大学、浙江农业大学、浙江医科大学；原浙大保留机械、电机、土木、化工四系。</p>
+        </li>
+        <li class="tl" data-year="1988" tabindex="0" role="button" aria-expanded="false">
+          <span class="tl__dot tl__dot--red"></span>
+          <span class="tl__year">1988</span>
+          <span class="tl__label">"创新"入校训</span>
+          <p class="tl__detail">路甬祥校长在校务工作会议上提出并确定"创新"，校训由此完整为四个字：<strong>求是创新</strong>。</p>
+        </li>
+        <li class="tl" data-year="1998" tabindex="0" role="button" aria-expanded="false">
+          <span class="tl__dot"></span>
+          <span class="tl__year">1998</span>
+          <span class="tl__label">四校合并</span>
+          <p class="tl__detail">9 月 15 日，同根同源的浙江大学、杭州大学、浙江农业大学、浙江医科大学合并组建新的浙江大学。</p>
+        </li>
+        <li class="tl" data-year="2026" tabindex="0" role="button" aria-expanded="false">
+          <span class="tl__dot tl__dot--now"></span>
+          <span class="tl__year">2026</span>
+          <span class="tl__label">此刻 · 有你</span>
+          <p class="tl__detail">建校 129 年。"求是"二字今天依然要在每一个浙大人身上，被重新回答一次。</p>
+        </li>
+      </ol>
+    </div>
+
+    <p class="sec-foot" data-reveal>点击任意年份，展开那一年发生了什么。</p>
+  </section>
+
+  <!-- ================= 第 2 屏 · 求是之解 ================= -->
+  <section class="screen screen--dark" id="s2" data-nav="求是之解" data-screen="2">
+    <div class="sec-head sec-head--light" data-reveal>
+      <p class="sec-head__kicker">第二屏 · 求解</p>
+      <h2 class="sec-head__title">"求是"到底是什么意思</h2>
+      <p class="sec-head__desc">不是一句口号，而是一套可以被检验的做人做事的标准。<br>点开三段话，看它怎样被定义。</p>
+    </div>
+
+    <div class="quotes" id="quotes">
+      <article class="quote" data-quote="0" tabindex="0" role="button" aria-expanded="true">
+        <header class="quote__head">
+          <span class="quote__idx">01</span>
+          <h3 class="quote__who">竺可桢 · 1941《科学之方法与精神》</h3>
+        </header>
+        <blockquote class="quote__text">不盲从，不附和，一以理智为依归。如遇横逆之境遇，则不屈不挠，不畏强御，<em>只问是非，不计利害</em>。</blockquote>
+        <p class="quote__note">同一篇文章里，他给"科学家应取的态度"写了三条：一是不盲从、不附和、只问是非；二是虚怀若谷，不武断，不蛮横；三是专心一致，实事求是，不作无病之呻吟，严谨整饬毫不苟且。</p>
+      </article>
+
+      <article class="quote" data-quote="1" tabindex="0" role="button" aria-expanded="false">
+        <header class="quote__head">
+          <span class="quote__idx">02</span>
+          <h3 class="quote__who">竺可桢 · 求是的路径</h3>
+        </header>
+        <blockquote class="quote__text">"求是"精神，就是<em>博学之，审问之，慎思之，明辨之，笃行之</em>。</blockquote>
+        <p class="quote__note">他把《中庸》治学的五个步骤，直接拿来当作"求是"的操作方法：先广博地学，再追问，再思考，再分辨，最后落到实处。前三步是头脑的事，第五步是脚下的事。</p>
+      </article>
+
+      <article class="quote" data-quote="2" tabindex="0" role="button" aria-expanded="false">
+        <header class="quote__head">
+          <span class="quote__idx">03</span>
+          <h3 class="quote__who">校歌《大不自多》 · 1938</h3>
+        </header>
+        <blockquote class="quote__text">昔言求是，实启尔求真。<br>无曰已是，无曰遂真，靡革匪因，靡故匪新。</blockquote>
+        <p class="quote__note">马一浮作词、应尚能谱曲的校歌里，藏着一句极重的提醒：不要说我已经对了，也不要说我已经穷尽真理了。没有哪一次革新不需要继承，没有哪一种传统不可以创新。</p>
+      </article>
+    </div>
+
+    <div class="values" data-reveal>
+      <h3 class="values__title">今天的四个词，都是从校歌里长出来的</h3>
+      <ul class="values__list">
+        <li><b>海纳江河</b><span>有宽广的视野、胸怀与格局，位低而纳百川</span></li>
+        <li><b>启真厚德</b><span>探索真理，尊重规律，让"真"与"善"统一</span></li>
+        <li><b>开物前民</b><span>接触实际，勇于实践，继往开来，不断创新</span></li>
+        <li><b>树我邦国</b><span>为国家的繁荣昌盛作出贡献</span></li>
+      </ul>
+      <p class="values__foot">另有浙大人共同价值观：<strong>勤学、修德、明辨、笃实</strong>。</p>
+    </div>
+  </section>
+
+  <!-- ================= 第 3 屏 · 文军长征 ================= -->
+  <section class="screen screen--dark screen--route" id="s3" data-nav="文军长征" data-screen="3">
+    <div class="sec-head sec-head--light" data-reveal>
+      <p class="sec-head__kicker">第三屏 · 行走</p>
+      <h2 class="sec-head__title">文军长征：把大学搬过半个中国</h2>
+      <p class="sec-head__desc">
+        1937 至 1946 年，浙大师生为保存文脉举校西迁，全程 <strong>2600 余公里</strong>，
+        足迹遍及浙、赣、湘、粤、桂、黔六省。点击地图上的站点，听那一段路。
+      </p>
+    </div>
+
+    <div class="route">
+      <div class="route__mapwrap">
+        <svg class="route__map" viewBox="0 0 400 470" role="img" aria-label="浙江大学西迁路线示意地图">
+          <!-- 经纬网格 -->
+          <g class="map-grid" aria-hidden="true">
+            <line x1="0" y1="60" x2="400" y2="60"/><line x1="0" y1="140" x2="400" y2="140"/>
+            <line x1="0" y1="220" x2="400" y2="220"/><line x1="0" y1="300" x2="400" y2="300"/>
+            <line x1="0" y1="380" x2="400" y2="380"/><line x1="80" y1="0" x2="80" y2="470"/>
+            <line x1="160" y1="0" x2="160" y2="470"/><line x1="240" y1="0" x2="240" y2="470"/>
+            <line x1="320" y1="0" x2="320" y2="470"/>
+          </g>
+          <!-- 示意陆地轮廓 -->
+          <path class="map-land" d="M40 300 q-14 -40 12 -78 q22 -34 62 -46 q26 -34 74 -38 q44 -4 62 22 q40 5 62 34 q26 33 12 74 q30 20 30 62 q0 44 -34 62 q-30 44 -84 42 q-52 -2 -76 -30 q-44 -4 -62 -38 q-30 -22 -28 -52 q-14 -8 -20 -14 Z"/>
+          <!-- 长江 · 珠江示意 -->
+          <path class="map-river" d="M18 232 q60 -12 118 -4 q70 10 128 -6 q52 -14 96 -4"/>
+          <path class="map-river" d="M92 424 q62 -18 116 -6 q56 12 112 -8"/>
+          <!-- 迁校路线 -->
+          <path class="route__line" id="routePath"
+                d="M330 118 C315 134 300 146 288 156 C266 176 232 192 214 214 C198 236 184 254 172 272 C160 288 144 300 134 312 C118 336 96 366 88 386 C102 400 118 400 134 406"
+                fill="none"/>
+          <!-- 站点由 JS 注入 -->
+          <g id="routeNodes"></g>
+        </svg>
+        <div class="route__odometer" aria-hidden="true">
+          <span class="route__odo-num" id="odoNum">0</span><span class="route__odo-unit">km</span>
+          <span class="route__odo-tip">累计西迁里程（示意）</span>
+        </div>
+      </div>
+
+      <div class="route__panel">
+        <ol class="route__steps" id="routeSteps"></ol>
+        <article class="route__story" id="routeStory" aria-live="polite">
+          <p class="route__story-kicker" id="storyKicker">第一站</p>
+          <h3 class="route__story-title" id="storyTitle">杭州 · 出发</h3>
+          <p class="route__story-date" id="storyDate">1937.11</p>
+          <p class="route__story-text" id="storyText"></p>
+          <ul class="route__story-people" id="storyPeople"></ul>
+        </article>
+      </div>
+    </div>
+
+    <div class="stats" data-reveal>
+      <div class="stat"><b data-count="2600" data-suffix="+">0</b><span>公里迁校路程</span></div>
+      <div class="stat"><b data-count="9" data-suffix="年">0</b><span>流亡办学时间</span></div>
+      <div class="stat"><b data-count="6" data-suffix="省">0</b><span>足迹所至</span></div>
+      <div class="stat"><b data-count="7" data-suffix="个学院">0</b><span>1946 年初规模</span></div>
+    </div>
+
+    <div class="merit" data-reveal>
+      <h3 class="merit__title">在最不像大学的地方，它办出了"东方剑桥"</h3>
+      <div class="merit__grid">
+        <div class="merit__item">
+          <h4>一支"文军"</h4>
+          <p>竺可桢以学术威望与人格魅力，罗致王淦昌、苏步青、陈建功、谈家桢、贝时璋、卢鹤绂等科学家，和马一浮、钱穆、丰子恺、张荫麟等人文大师。他说：<em>"教授是大学的灵魂。"</em></p>
+        </div>
+        <div class="merit__item">
+          <h4>一批学生</h4>
+          <p>战火中的浙大，走出了李政道、程开甲、谷超豪、叶笃正等日后影响深远的学者。竺可桢也看重"初露头角、具有良好潜质的青年"，认为"要发展一个大学，最主要的是能物色前途有望的青年"。</p>
+        </div>
+        <div class="merit__item">
+          <h4>一句评价</h4>
+          <p>英国学者李约瑟多次考察迁至贵州的浙江大学，盛赞其为"东方剑桥"。这不是对楼的评价，是对人的评价。</p>
+        </div>
+        <div class="merit__item">
+          <h4>一种代价</h4>
+          <p>西迁途中医疗条件极差，竺可桢的次子竺衡与夫人张侠魂相继病殁。他写下"求是"两个字时，正处在一生最艰难的境遇里。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 第 4 屏 · 竺老两问 ================= -->
+  <section class="screen" id="s4" data-nav="竺老两问" data-screen="4">
+    <div class="sec-head" data-reveal>
+      <p class="sec-head__kicker">第四屏 · 提问</p>
+      <h2 class="sec-head__title">竺老两问</h2>
+      <p class="sec-head__desc">1936 年 9 月，浙江大学开学典礼。新校长竺可桢没有讲成绩，只问了两个问题。今天，它被刻在紫金港校区东二门的大石头上。</p>
+    </div>
+
+    <div class="ask" id="ask">
+      <div class="ask__card">
+        <p class="ask__num">问 一</p>
+        <p class="ask__q" id="q1"></p>
+      </div>
+      <div class="ask__card">
+        <p class="ask__num">问 二</p>
+        <p class="ask__q" id="q2"></p>
+      </div>
+      <div class="ask__reveal">
+        <button class="btn btn--ghost" id="answerToggle" type="button">竺校长自己怎么回答？</button>
+        <div class="ask__answers" id="answers" hidden>
+          <p><b>其一</b>：诸位求学，应不仅在科目本身，而且要训练如何能正确地训练自己的思想。</p>
+          <p><b>其二</b>：我们人生的目的是在能服务，而不在享受。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mypost" data-reveal>
+      <h3 class="mypost__title">现在轮到你了</h3>
+      <p class="mypost__desc">写下你的答案。它只保存在你手机／电脑的本地浏览器里，不会上传到任何服务器。</p>
+      <div class="mypost__grid">
+        <label class="field">
+          <span class="field__label">我到这里来，是为了</span>
+          <textarea id="myA1" rows="3" maxlength="120" placeholder="例如：弄明白自己真正喜欢什么，并且把它学扎实。"></textarea>
+          <span class="field__count" data-count-for="myA1">0/120</span>
+        </label>
+        <label class="field">
+          <span class="field__label">我想成为一个怎样的人</span>
+          <textarea id="myA2" rows="3" maxlength="120" placeholder="例如：一个有真本事、也愿意做事的人。"></textarea>
+          <span class="field__count" data-count-for="myA2">0/120</span>
+        </label>
+      </div>
+      <div class="mypost__actions">
+        <button class="btn btn--primary" id="saveAnswer" type="button">存下我的回答</button>
+        <button class="btn btn--text" id="clearAnswer" type="button">清空</button>
+        <span class="mypost__status" id="saveStatus" role="status"></span>
+      </div>
+    </div>
+
+    <div class="echo" data-reveal>
+      <h3 class="echo__title">不同年代的浙大人，这样回答</h3>
+      <div class="echo__list">
+        <div class="echo__item"><b>1938 · 宜山</b><p>在炮火与疫病中，一所大学把"求是"写进校训。回答是：<em>只问是非，不计利害。</em></p></div>
+        <div class="echo__item"><b>1940s · 湄潭</b><p>在祠堂与庙宇改成的教室里，学生们在煤油灯下做实验、读原典。回答是：<em>把书读下去，把火种留下来。</em></p></div>
+        <div class="echo__item"><b>1998 至今</b><p>四校合并，向"综合型、研究型、创新型"一流大学前行。回答是：<em>以天下为己任、以真理为依归。</em></p></div>
+        <div class="echo__item"><b>此刻 · 你</b><p id="echoMine">—— 写下你的答案，它就会出现在这里。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 第 5 屏 · 六条准则 ================= -->
+  <section class="screen" id="s5" data-nav="六条准则" data-screen="5">
+    <div class="sec-head" data-reveal>
+      <p class="sec-head__kicker">第五屏 · 践行</p>
+      <h2 class="sec-head__title">求是，在今天的六个动作</h2>
+      <p class="sec-head__desc">把"求是"翻译成今天校园里的具体处境。点击卡片翻面，看它的含义、历史底色，以及一个可以自问的问题。</p>
+    </div>
+    <div class="cards" id="cards"></div>
+    <p class="sec-foot" data-reveal>六张卡片，对应六个"今天该怎么做"的选择。</p>
+  </section>
+
+  <!-- ================= 第 6 屏 · 传承人的回答 ================= -->
+  <section class="screen" id="s6" data-nav="求是人" data-screen="6">
+    <div class="sec-head" data-reveal>
+      <p class="sec-head__kicker">第六屏 · 人</p>
+      <h2 class="sec-head__title">求是精神，是被人一次次活出来的</h2>
+      <p class="sec-head__desc">它首先属于这样一些人：把学问当毕生事业的人，把责任当分内之事的人。</p>
+    </div>
+
+    <div class="people" id="people"></div>
+
+    <div class="lineage" data-reveal>
+      <h3 class="lineage__title">一条一直没断的线</h3>
+      <ul class="lineage__list">
+        <li><b>创始</b><span>1897 求是书院，以"务求实学，存是去非"立学</span></li>
+        <li><b>定型</b><span>1938 宜山，校训、校歌、导师制，"求是"成为精神标识</span></li>
+        <li><b>拓展</b><span>1952 后以工为主、理工结合，"创新"写入校训</span></li>
+        <li><b>今天</b><span>1998 四校合并，向世界一流大学前行，"以天下为己任、以真理为依归"</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= 第 7 屏 · 求是小测 ================= -->
+  <section class="screen screen--dark" id="s7" data-nav="求是小测" data-screen="7">
+    <div class="sec-head sec-head--light" data-reveal>
+      <p class="sec-head__kicker">第七屏 · 自测</p>
+      <h2 class="sec-head__title">求是小测 · 三题</h2>
+      <p class="sec-head__desc">看完前面的九屏，来验一验。答错不要紧——"无曰已是，无曰遂真"，正是校歌里的提醒。</p>
+    </div>
+
+    <div class="quiz" id="quiz"></div>
+
+    <div class="quiz__result" id="quizResult" hidden>
+      <p class="quiz__score"><span id="scoreNum">0</span> / 3</p>
+      <p class="quiz__verdict" id="quizVerdict"></p>
+      <button class="btn btn--ghost" id="quizReset" type="button">再答一次</button>
+    </div>
+  </section>
+
+  <!-- ================= 第 8 屏 · 一起求是 ================= -->
+  <section class="screen" id="s8" data-nav="一起求是" data-screen="8">
+    <div class="sec-head" data-reveal>
+      <p class="sec-head__kicker">第八屏 · 行动</p>
+      <h2 class="sec-head__title">从今天起，做一件求是的小事</h2>
+      <p class="sec-head__desc">"求是"不在横幅上，在今天下午你打算做的那件事里。选一件，写下你的名字，生成一张属于你的求是卡。</p>
+    </div>
+
+    <div class="pledge">
+      <div class="pledge__form">
+        <label class="field">
+          <span class="field__label">署名（昵称／学号均可，仅本地显示）</span>
+          <input id="pledgeName" type="text" maxlength="16" placeholder="例如：求是园里的一名学生">
+        </label>
+        <div class="field">
+          <span class="field__label">我从今天起，</span>
+          <div class="pledge__chips" id="pledgeChips"></div>
+        </div>
+        <label class="field">
+          <span class="field__label">补充一句给自己的话（可留空）</span>
+          <textarea id="pledgeNote" rows="2" maxlength="60" placeholder="例如：不抄近路，也不绕开难题。"></textarea>
+        </label>
+        <div class="mypost__actions">
+          <button class="btn btn--primary" id="genPledge" type="button">生成我的求是卡</button>
+          <button class="btn btn--text" id="resetPledge" type="button">重来</button>
+        </div>
+      </div>
+
+      <div class="pledge__preview">
+        <div class="pcard" id="pcard">
+          <div class="pcard__seal" aria-hidden="true">求是</div>
+          <p class="pcard__kicker">求是卡 · ZJU QIUSHI</p>
+          <p class="pcard__line" id="pcardLine">从今天起，<b>把每一门课的问题问到第 3 层</b></p>
+          <p class="pcard__note" id="pcardNote"></p>
+          <p class="pcard__sign" id="pcardSign">—— 求是园里的一名学生</p>
+          <p class="pcard__date" id="pcardDate"></p>
+          <p class="pcard__foot">只问是非，不计利害 · 求是创新</p>
+        </div>
+        <p class="pledge__tip">生成后可以截图保存，或直接长按图片分享给你的同学。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 第 9 屏 · 尾声 / 分享 ================= -->
+  <section class="screen screen--final" id="s9" data-nav="尾声" data-screen="9">
+    <div class="song" data-reveal>
+      <h2 class="song__title">《大不自多》</h2>
+      <p class="song__meta">马一浮 词 · 应尚能 曲 · 1938 年定为浙江大学校歌</p>
+      <div class="song__lyrics">
+        <p class="song__verse">大不自多，海纳江河。惟学无际，际于天地。</p>
+        <p class="song__verse">形上谓道兮，形下谓器。礼主别异兮，乐主和同。</p>
+        <p class="song__verse">知其不二兮，尔听斯聪。</p>
+        <p class="song__verse song__verse--key">国有成均，在浙之滨。<br>昔言求是，实启尔求真。</p>
+        <p class="song__verse">习坎示教，始见经纶。无曰已是，无曰遂真，</p>
+        <p class="song__verse">靡革匪因，靡故匪新。何以新之，开物前民。</p>
+        <p class="song__verse">嗟尔髦士，尚其有闻。</p>
+        <p class="song__verse song__verse--key">树我邦国，天下来同。</p>
+      </div>
+      <p class="song__trans">大海浩瀚而不自满，所以能容纳千万条江河；<br>有一所国立大学，在中国东南的浙水之滨，<br>它以求是为宗旨，其实就是启迪人们求真。</p>
+    </div>
+
+    <div class="share" data-reveal>
+      <h3 class="share__title">把这条长卷，发给一个人</h3>
+      <div class="share__box">
+        <div class="share__qr">
+          <div id="qrBox" class="share__qrbox" role="img" aria-label="扫码打开本页">
+            <!-- 有 JS 时由 qr.js 现场生成；无 JS 时回退到静态 SVG -->
+            <img src="assets/img/qrcode.svg" alt="扫码打开本页" width="168" height="168">
+          </div>
+        </div>
+        <div class="share__text">
+          <p>扫码，或复制下面的链接，在手机上继续这条长卷。</p>
+          <div class="share__url">
+            <input id="shareUrl" type="text" aria-label="作品网址" value="https://MATIC-InfoSecurity.github.io/zju-qiushi-h5/">
+            <button class="btn btn--small" id="copyUrl" type="button">复制</button>
+          </div>
+          <div class="share__qrbtns">
+            <button class="btn btn--tiny" id="qrApply" type="button">用这个网址生成二维码</button>
+            <button class="btn btn--tiny btn--tiny-ghost" id="qrDownload" type="button">下载二维码图片</button>
+          </div>
+          <p class="share__hint" id="shareHint"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="end" data-reveal>
+      <div class="end__eagle" aria-hidden="true">求是</div>
+      <p class="end__big">求是创新</p>
+      <p class="end__line">"只问是非，不计利害。"</p>
+      <p class="end__line2">从 1897 到此刻，这所大学一直在回答同一个问题：<br>我们究竟要成为怎样的人。</p>
+      <button class="btn btn--primary" id="restartBtn" type="button">回到开头，再走一遍</button>
+    </div>
+
+    <footer class="foot">
+      <p class="foot__note">本作品为大学生思想素养传播实践课程作业，非浙江大学官方页面。</p>
+      <p class="foot__src">
+        史实依据：浙江大学官网 · 浙大校歌《大不自多》 · 竺可桢《科学之方法与精神》(1941) ·
+        《国立浙江大学校刊》1938 · 新生指引《浙大简史》《竺老两问》《精神内核》。
+      </p>
+      <p class="foot__src foot__credits">
+        背景照片来自 Wikimedia Commons，遵循 CC BY / CC BY-SA / 公有领域授权：
+        之江校区（摄影 Zhangzhugang / CC BY-SA 4.0）、紫金港校区（Windmemories / CC BY-SA 4.0；
+        落日 Shengwei Zhang / 公有领域）、西溪校区（MNXANL / CC BY-SA 4.0）、
+        海宁国际校区（Y Chen / CC BY-SA 4.0）。完整署名与许可证见工程内
+        <code>assets/img/campus/CREDITS.md</code>。
+      </p>
+      <p class="foot__src">背景音乐：浙江大学校歌《大不自多》（词 马一浮 / 曲 应尚能），
+        录音版权归浙江大学与表演者，本页用于课程作业非商业演示，并提供
+        <a href="https://www.zju.edu.cn/574/" target="_blank" rel="noopener">官网收听</a>入口。</p>
+    </footer>
+  </section>
+
+</div>
+</main>
+
+<script src="assets/js/campus.js"></script>
+<script src="assets/js/audio.js"></script>
+<script src="assets/js/music.js"></script>
+<script src="assets/js/qr.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
